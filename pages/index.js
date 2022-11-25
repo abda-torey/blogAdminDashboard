@@ -2,13 +2,9 @@ import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import LeftNavBar from "../component/LeftNavBar";
-import Header from '../component/Header';
+import Header from "../component/Header";
 import Content from "../component/Content";
 import AddPost from "../component/post/AddPost";
-
-
-
-
 
 export default function Home() {
   return (
@@ -20,11 +16,10 @@ export default function Home() {
       </Head>
 
       <main>
-        <LeftNavBar />
-        <Header />
+        {/* <LeftNavBar /> */}
+        {/* <Header /> */}
         {/* <Content /> */}
         <AddPost />
-        
 
         
       </main>

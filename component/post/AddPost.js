@@ -2,12 +2,14 @@ import { useState, useRef } from "react";
 import TipTap from "../TipTap";
 import classes from "./AddPost.module.css";
 import parser from "html-react-parser";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-async function saveBlogData(blogTitle, blogData,imageUrl) {
+async function saveBlogData(blogTitle, blogData, imageUrl) {
   const response = await fetch("/api/posts/AddPost", {
     method: "POST",
-    body: JSON.stringify({ blogTitle, blogData,imageUrl }),
+    body: JSON.stringify({ blogTitle, blogData, imageUrl }),
     headers: {
       "Content-Type": "application/json",
     },
@@ -22,6 +24,7 @@ async function saveBlogData(blogTitle, blogData,imageUrl) {
 }
 function AddPost() {
   const [blogData, setBlogData] = useState("");
+  const [isPublishing, setIsPublishing] = useState(false);
   const titleRef = useRef();
   const ImageRef = useRef();
   const router = useRouter();
@@ -29,6 +32,9 @@ function AddPost() {
     // console.log(data);
     setBlogData(data);
   }
+  const notify = () => {
+    toast.success("🦄 Successfully posted");
+  };
 
   async function submitHandler(event) {
     event.preventDefault();
@@ -42,6 +48,7 @@ function AddPost() {
 
     formData.append("upload_preset", "blogImage");
 
+    setIsPublishing(true);
     const data = await fetch(
       "https://api.cloudinary.com/v1_1/dydejb036/image/upload",
       {
@@ -55,7 +62,10 @@ function AddPost() {
     const imageUrl = res.secure_url;
     if (imageUrl) {
       try {
-        const result = await saveBlogData(blogTitle, blogData,imageUrl);
+        const result = await saveBlogData(blogTitle, blogData, imageUrl);
+
+        setIsPublishing(false);
+        notify()
 
         router.reload();
 
@@ -63,10 +73,9 @@ function AddPost() {
       } catch (error) {
         console.log(error);
       }
-
-      
     }
   }
+
   return (
     <div className={classes.container}>
       <div className={classes.wrapper}>
@@ -91,12 +100,27 @@ function AddPost() {
               />
             </label>
           </div>
+
           <div className={classes.buttonField}>
             <button type="submit">Publish</button>
           </div>
         </form>
       </div>
-      
+      <div>
+        <button onClick={notify}>notify</button>
+      </div>
+      <ToastContainer
+        position="bottom-center"
+        autoClose={1800}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </div>
   );
 }
